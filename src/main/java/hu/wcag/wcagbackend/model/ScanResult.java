@@ -1,6 +1,5 @@
 package hu.wcag.wcagbackend.model;
 
-import hu.wcag.wcagbackend.types.ErrorLevel;
 import jakarta.persistence.*;
 
 @Entity
@@ -19,9 +18,8 @@ public class ScanResult {
     @JoinColumn(name = "error_id", nullable = false)
     private WcagError wcagError;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "error_level", nullable = false)
-    private ErrorLevel errorLevel;
+    private String errorLevel;
 
     @Column(name = "html_element", nullable = false, columnDefinition = "TEXT")
     private String htmlElement;
@@ -35,7 +33,7 @@ public class ScanResult {
     public ScanResult() {
     }
 
-    public ScanResult(Long id, Scan scan, WcagError wcagError, ErrorLevel errorLevel, String htmlElement, String targetSelector, String aiSuggestion) {
+    public ScanResult(Long id, Scan scan, WcagError wcagError, String errorLevel, String htmlElement, String targetSelector, String aiSuggestion) {
         this.id = id;
         this.scan = scan;
         this.wcagError = wcagError;
@@ -69,11 +67,11 @@ public class ScanResult {
         this.wcagError = wcagError;
     }
 
-    public ErrorLevel getErrorLevel() {
+    public String getErrorLevel() {
         return errorLevel;
     }
 
-    public void setErrorLevel(ErrorLevel errorLevel) {
+    public void setErrorLevel(String errorLevel) {
         this.errorLevel = errorLevel;
     }
 

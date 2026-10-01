@@ -12,7 +12,7 @@ public interface WebsiteRepository extends JpaRepository<Website, Long> {
 
     List<Website> findByUserId(Long userId);
 
-    boolean exisrsByUrlAndUserId(String url, Long userId);
+    boolean existsByUrlAndUserId(String url, Long userId);
 
     Long user(User user);
 }

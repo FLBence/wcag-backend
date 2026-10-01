@@ -31,7 +31,7 @@ public class ScanService {
         Scan scan = new Scan();
         scan.setWebsite(website);
         scan.setScannedAt(LocalDateTime.now());
-        scan.setStatus(Status.IN_PROGRESS);
+        scan.setStatus(Status.PENDING);
 
         return scanRepository.save(scan);
     }
@@ -50,13 +50,13 @@ public class ScanService {
 
     @Transactional(readOnly = true)
     public Scan getScanById(Long id) {
-        return scanRepository.findById(id)
+        return scanRepository.findByIdWithWebsite(id)
                 .orElseThrow(() -> new RuntimeException("A scan nem található ezzel az ID-val: " + id));
     }
 
     @Transactional(readOnly = true)
     public List<Scan> getScansByWebsiteId(Long websiteId) {
-        return scanRepository.findByWebsiteIdOrderByScanDateDesc(websiteId);
+        return scanRepository.findByWebsiteIdOrderByScannedAtDesc(websiteId);
     }
 
 }
