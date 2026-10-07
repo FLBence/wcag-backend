@@ -6,7 +6,7 @@ import hu.wcag.wcagbackend.types.Status;
 import java.time.LocalDateTime;
 
 public record ScanDTO(
-    Long Id,
+    Long id,
     Status status,
     String websiteUrl,
     LocalDateTime scannedAt,

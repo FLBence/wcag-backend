@@ -3,7 +3,7 @@ package hu.wcag.wcagbackend.dtos;
 import hu.wcag.wcagbackend.model.ScanResult;
 
 public record ScanResultDTO(
-        Long Id,
+        Long id,
         String targetSelector,
         String htmlElement,
         String errorLevel,
