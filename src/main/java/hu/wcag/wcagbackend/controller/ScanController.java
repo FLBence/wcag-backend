@@ -11,8 +11,13 @@ import hu.wcag.wcagbackend.service.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -33,24 +38,65 @@ public class ScanController {
         this.websiteRepository = websiteRepository;
     }
 
+    private boolean isValidUrl(String url){
+        try {
+            URI uri = new URI(url);
+
+            if (uri.getScheme() == null || uri.getHost() == null) {
+                return false;
+            }
+
+            HttpClient client = HttpClient.newBuilder()
+                    .connectTimeout(Duration.ofSeconds(3))
+                    .followRedirects(HttpClient.Redirect.NORMAL)
+                    .build();
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(uri)
+                    .method("HEAD", HttpRequest.BodyPublishers.noBody())
+                    .timeout(Duration.ofSeconds(3))
+                    .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+                    .build();
+
+            HttpResponse<Void> response = client.send(request, HttpResponse.BodyHandlers.discarding());
+
+            return response.statusCode() >= 200 && response.statusCode() < 400;
+
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private String getTitleFromUrl(String url){
+        try{
+            URI uri = new URI(url);
+            String host = uri.getHost();
+            return (host != null) ? host : url;
+        } catch (Exception e){
+            return url;
+        }
+    }
+
     @PostMapping
-    public ResponseEntity<ScanDTO> createScan(@RequestBody CreateScanRequestDTO scanRequestDTO){
+    public ResponseEntity<?> createScan(@RequestBody CreateScanRequestDTO scanRequestDTO) {
+        if (!isValidUrl(scanRequestDTO.websiteUrl())){
+            return ResponseEntity
+                    .badRequest()
+                    .body(Map.of("message", "A megadott URL nem létezik vagy jelenleg nem elérhető."));
+        }
         User user = userService.getUserById((long) 2); //ToDo jelenlegi user beállítása
         Website website = websiteRepository.findByUrl(scanRequestDTO.websiteUrl())
                 .orElseGet(() -> {
                     Website newWebsite = new Website();
-                    String title = scanRequestDTO.websiteUrl();
-                    title = title.split("//")[1];
-                    title = title.split("\\.")[1];
                     newWebsite.setUser(user);
                     newWebsite.setUrl(scanRequestDTO.websiteUrl());
-                    newWebsite.setTitle(title);
+                    newWebsite.setTitle(getTitleFromUrl(scanRequestDTO.websiteUrl()));
                     return websiteRepository.save(newWebsite);
                 });
 
-        Scan scan = scanService.initiateScan(website.getId());
+            Scan scan = scanService.initiateScan(website.getId());
 
-        return ResponseEntity.ok(ScanDTO.fromModel(scan));
+            return ResponseEntity.ok(ScanDTO.fromModel(scan));
     }
 
     @PostMapping("/{scanId}/start")
