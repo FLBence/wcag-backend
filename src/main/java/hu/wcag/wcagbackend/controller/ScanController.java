@@ -84,19 +84,17 @@ public class ScanController {
                     .badRequest()
                     .body(Map.of("message", "A megadott URL nem létezik vagy jelenleg nem elérhető."));
         }
-        User user = userService.getUserById((long) 2); //ToDo jelenlegi user beállítása
+        User user = userService.getUserById(scanRequestDTO.id());
         Website website = websiteRepository.findByUrl(scanRequestDTO.websiteUrl())
                 .orElseGet(() -> {
                     Website newWebsite = new Website();
-                    newWebsite.setUser(user);
                     newWebsite.setUrl(scanRequestDTO.websiteUrl());
                     newWebsite.setTitle(getTitleFromUrl(scanRequestDTO.websiteUrl()));
                     return websiteRepository.save(newWebsite);
                 });
 
-            Scan scan = scanService.initiateScan(website.getId());
-
-            return ResponseEntity.ok(ScanDTO.fromModel(scan));
+        Scan scan = scanService.initiateScan(website.getId(),user.getId());
+        return ResponseEntity.ok(ScanDTO.fromModel(scan));
     }
 
     @PostMapping("/{scanId}/start")

@@ -1,14 +1,15 @@
 package hu.wcag.wcagbackend.service;
 
 import hu.wcag.wcagbackend.model.Scan;
+import hu.wcag.wcagbackend.model.User;
 import hu.wcag.wcagbackend.model.Website;
 import hu.wcag.wcagbackend.repository.ScanRepository;
+import hu.wcag.wcagbackend.repository.UserRepository;
 import hu.wcag.wcagbackend.repository.WebsiteRepository;
 import hu.wcag.wcagbackend.types.Status;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.security.PublicKey;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -17,19 +18,25 @@ public class ScanService {
 
     private final ScanRepository scanRepository;
     private final WebsiteRepository websiteRepository;
+    private final UserRepository userRepository;
 
-    public ScanService(ScanRepository scanRepository, WebsiteRepository websiteRepository) {
+    public ScanService(ScanRepository scanRepository, WebsiteRepository websiteRepository, UserRepository userRepository) {
         this.scanRepository = scanRepository;
         this.websiteRepository = websiteRepository;
+        this.userRepository = userRepository;
     }
 
     @Transactional
-        public Scan initiateScan(Long websiteId) {
+        public Scan initiateScan(Long websiteId, Long userId) {
         Website website = websiteRepository.findById(websiteId)
                 .orElseThrow(() -> new RuntimeException("A weboldal nem találahtó ezzel az ID-val:  " + websiteId));
 
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("A felhasználó nem található ezzel az ID-val: " + userId));
+
         Scan scan = new Scan();
         scan.setWebsite(website);
+        scan.setUser(user);
         scan.setScannedAt(LocalDateTime.now());
         scan.setStatus(Status.PENDING);
 
@@ -55,8 +62,8 @@ public class ScanService {
     }
 
     @Transactional(readOnly = true)
-    public List<Scan> getScansByWebsiteId(Long websiteId) {
-        return scanRepository.findByWebsiteIdOrderByScannedAtDesc(websiteId);
+    public List<Scan> getScansByUserId(Long userId) {
+        return scanRepository.findByUserId(userId);
     }
 
 }

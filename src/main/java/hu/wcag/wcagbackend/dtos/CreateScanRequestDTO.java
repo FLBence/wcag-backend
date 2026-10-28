@@ -4,5 +4,6 @@ import jakarta.validation.constraints.NotBlank;
 
 public record CreateScanRequestDTO(
         @NotBlank(message = "Az URL nem lehet üres!")
-        String websiteUrl
+        String websiteUrl,
+        Long id
 ) {}

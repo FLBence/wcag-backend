@@ -14,28 +14,9 @@ import java.util.List;
 public class WebsiteService {
 
     private final WebsiteRepository websiteRepository;
-    private final UserRepository userRepository;
 
-    public WebsiteService(WebsiteRepository websiteRepository, UserRepository userRepository) {
+    public WebsiteService(WebsiteRepository websiteRepository) {
         this.websiteRepository = websiteRepository;
-        this.userRepository = userRepository;
-    }
-
-    @Transactional
-    public Website addWebsiteToUser(Long userId, Website website) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("A felhasználó nem található ezzel az ID-val: " + userId));
-
-        if (websiteRepository.existsByUrlAndUserId(website.getUrl(), userId)) {
-            throw new IllegalArgumentException("Ez a weboldal URL már hozzá van adva ehhez a fiókhoz!");
-        }
-        website.setUser(user);
-        return websiteRepository.save(website);
-    }
-
-    @Transactional(readOnly = true)
-    public List<Website> getWebsitesByUserId(Long userId) {
-        return websiteRepository.findByUserId(userId);
     }
 
     @Transactional(readOnly = true)

@@ -27,15 +27,20 @@ public class Scan {
     @Column(name = "status", nullable = false)
     private Status status = Status.PENDING;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
     public Scan() {
     }
 
-    public Scan(Long id, Website website, LocalDateTime scannedAt, LocalDateTime completedAt, Status status) {
+    public Scan(Long id, Website website, LocalDateTime scannedAt, LocalDateTime completedAt, Status status, User user) {
         this.id = id;
         this.website = website;
         this.scannedAt = scannedAt;
         this.completedAt = completedAt;
         this.status = status != null ? status : Status.PENDING;
+        this.user = user;
     }
 
     @PrePersist
@@ -84,5 +89,13 @@ public class Scan {
 
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

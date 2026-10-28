@@ -1,20 +1,23 @@
 package hu.wcag.wcagbackend.service;
 
+import hu.wcag.wcagbackend.dtos.LoginDTO;
 import hu.wcag.wcagbackend.model.User;
 import hu.wcag.wcagbackend.repository.UserRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional
@@ -40,6 +43,14 @@ public class UserService {
     public User getUserByEmail(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("A felhasználó nem található ezzel az email címmel: " + email));
+    }
+
+    public boolean login(LoginDTO loginDTO){
+        User user = getUserByEmail(loginDTO.email());
+        if(!passwordEncoder.matches(loginDTO.password(), user.getPassword())){
+            throw new RuntimeException("Hibás jelszó!");
+        }
+        return true;
     }
 
     @Transactional

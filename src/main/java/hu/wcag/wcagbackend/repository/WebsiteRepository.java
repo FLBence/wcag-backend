@@ -11,11 +11,5 @@ import java.util.Optional;
 @Repository
 public interface WebsiteRepository extends JpaRepository<Website, Long> {
 
-    List<Website> findByUserId(Long userId);
-
-    boolean existsByUrlAndUserId(String url, Long userId);
-
     Optional<Website> findByUrl(String websiteUrl);
-
-    Long user(User user);
 }

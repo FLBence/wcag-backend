@@ -3,7 +3,7 @@ package hu.wcag.wcagbackend.model;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "scan_result")
+@Table(name = "scan_results")
 public class ScanResult {
 
     @Id
