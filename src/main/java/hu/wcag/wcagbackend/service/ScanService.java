@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 public class ScanService {
@@ -59,11 +58,6 @@ public class ScanService {
     public Scan getScanById(Long id) {
         return scanRepository.findByIdWithWebsite(id)
                 .orElseThrow(() -> new RuntimeException("A scan nem található ezzel az ID-val: " + id));
-    }
-
-    @Transactional(readOnly = true)
-    public List<Scan> getScansByUserId(Long userId) {
-        return scanRepository.findByUserId(userId);
     }
 
 }

@@ -15,5 +15,7 @@ public interface ScanRepository extends JpaRepository<Scan, Long> {
     @Query("SELECT s FROM Scan s JOIN FETCH s.website WHERE s.id = :id")
     Optional<Scan> findByIdWithWebsite(@Param("id") Long id);
 
+    Optional<Scan> findByUserIdAndWebsiteId(Long userId, Long websiteId);
+
     List<Scan> findByUserId(Long userId);
 }

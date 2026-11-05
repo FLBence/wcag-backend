@@ -4,10 +4,9 @@ import hu.wcag.wcagbackend.dtos.LoginDTO;
 import hu.wcag.wcagbackend.dtos.RegisterDTO;
 import hu.wcag.wcagbackend.model.User;
 import hu.wcag.wcagbackend.repository.UserRepository;
+import hu.wcag.wcagbackend.service.JwtService;
 import hu.wcag.wcagbackend.service.UserService;
 import hu.wcag.wcagbackend.types.Role;
-import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -25,11 +24,13 @@ public class AuthController {
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
+    private final JwtService jwtService;
 
-    public AuthController(UserService userService, PasswordEncoder passwordEncoder, UserRepository userRepository){
+    public AuthController(UserService userService, PasswordEncoder passwordEncoder, UserRepository userRepository, JwtService jwtService){
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
+        this.jwtService = jwtService;
     }
 
     @PostMapping("/register")
@@ -53,10 +54,12 @@ public class AuthController {
         try {
             userService.login(loginDTO);
             Map<String, Object> response = new HashMap<>();
-            response.put("message", "Sikeres bejelentkezés");
             User user = userService.getUserByEmail(loginDTO.email());
+            String token = jwtService.generateToken(user.getEmail());
             response.put("username", user.getUsername());
             response.put("userId", user.getId());
+            response.put("token", token);
+            response.put("message", "Sikeres bejelentkezés");
             return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());

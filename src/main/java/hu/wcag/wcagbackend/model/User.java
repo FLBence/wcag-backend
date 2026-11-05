@@ -2,11 +2,18 @@ package hu.wcag.wcagbackend.model;
 
 import hu.wcag.wcagbackend.types.Role;
 import jakarta.persistence.*;
+import org.jspecify.annotations.NonNull;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
 import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
-public class User {
+public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,6 +45,11 @@ public class User {
         this.password = password;
         this.role = role;
         this.createdAt = createdAt;
+    }
+
+    @Override
+    public @NonNull Collection<? extends GrantedAuthority> getAuthorities(){
+        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
     }
 
     @PrePersist

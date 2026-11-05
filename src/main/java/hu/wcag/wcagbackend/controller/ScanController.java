@@ -6,9 +6,13 @@ import hu.wcag.wcagbackend.dtos.ScanResultDTO;
 import hu.wcag.wcagbackend.model.Scan;
 import hu.wcag.wcagbackend.model.User;
 import hu.wcag.wcagbackend.model.Website;
+import hu.wcag.wcagbackend.repository.ScanRepository;
+import hu.wcag.wcagbackend.repository.ScanResultRepository;
 import hu.wcag.wcagbackend.repository.WebsiteRepository;
 import hu.wcag.wcagbackend.service.*;
+import hu.wcag.wcagbackend.types.Status;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -16,8 +20,10 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -29,13 +35,17 @@ public class ScanController {
     private final ScanResultService scanResultService;
     private final UserService userService;
     private final WebsiteRepository websiteRepository;
+    private final ScanRepository scanRepository;
+    private final ScanResultRepository scanResultRepository;
 
-    public ScanController(AxeScanService axeScanService, ScanService scanService, ScanResultService scanResultService, UserService userService, WebsiteRepository websiteRepository){
+    public ScanController(AxeScanService axeScanService, ScanService scanService, ScanResultService scanResultService, UserService userService, WebsiteRepository websiteRepository, ScanRepository scanRepository, ScanResultRepository scanResultRepository){
         this.axeScanService = axeScanService;
         this.scanService = scanService;
         this.scanResultService = scanResultService;
         this.userService = userService;
         this.websiteRepository = websiteRepository;
+        this.scanRepository = scanRepository;
+        this.scanResultRepository = scanResultRepository;
     }
 
     private boolean isValidUrl(String url){
@@ -77,6 +87,7 @@ public class ScanController {
         }
     }
 
+    @Transactional
     @PostMapping
     public ResponseEntity<?> createScan(@RequestBody CreateScanRequestDTO scanRequestDTO) {
         if (!isValidUrl(scanRequestDTO.websiteUrl())){
@@ -93,7 +104,17 @@ public class ScanController {
                     return websiteRepository.save(newWebsite);
                 });
 
-        Scan scan = scanService.initiateScan(website.getId(),user.getId());
+        Optional<Scan> existingScan = scanRepository.findByUserIdAndWebsiteId(user.getId(), website.getId());
+        Scan scan;
+        if (existingScan.isPresent()) {
+            scan = existingScan.get();
+            scan.setStatus(Status.PENDING);
+            scan.setScannedAt(LocalDateTime.now());
+            scanResultRepository.deleteByScanId(scan.getId());
+            scan = scanRepository.save(scan);
+        } else
+            scan = scanService.initiateScan(website.getId(),user.getId());
+
         return ResponseEntity.ok(ScanDTO.fromModel(scan));
     }
 
