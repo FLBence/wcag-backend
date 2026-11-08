@@ -28,11 +28,19 @@ public class AxeScanService {
     private final ScanService scanService;
     private final ScanResultService scanResultService;
     private final WcagErrorService wcagErrorService;
+    private final CustomLinkValidatorService linkValidatorService;
+    private final CustomColorContrastService customColorContrastService;
 
-    public AxeScanService(ScanService scanService, ScanResultService scanResultService, WcagErrorService wcagErrorService){
+    public AxeScanService(ScanService scanService,
+                          ScanResultService scanResultService,
+                          WcagErrorService wcagErrorService,
+                          CustomLinkValidatorService linkValidatorService,
+                          CustomColorContrastService customColorContrastService){
         this.scanService = scanService;
         this.scanResultService = scanResultService;
         this.wcagErrorService = wcagErrorService;
+        this.linkValidatorService = linkValidatorService;
+        this.customColorContrastService = customColorContrastService;
     }
 
     @Async
@@ -94,6 +102,8 @@ public class AxeScanService {
             }
 
             scanResultService.saveAllResults(scanResultsToSave);
+            linkValidatorService.validateVagueLinks(scanId, driver);
+            customColorContrastService.validateColorContrast(scanId, driver);
             scanService.updateScanStatus(scanId, Status.COMPLETED);
             logger.info("A szkennelés sikeresen befejeződött (scanId: {})", scanId);
         }catch (Exception e){

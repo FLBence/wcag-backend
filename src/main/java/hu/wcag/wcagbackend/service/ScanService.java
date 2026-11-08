@@ -59,5 +59,4 @@ public class ScanService {
         return scanRepository.findByIdWithWebsite(id)
                 .orElseThrow(() -> new RuntimeException("A scan nem található ezzel az ID-val: " + id));
     }
-
 }
