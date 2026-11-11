@@ -1,5 +1,6 @@
 package hu.wcag.wcagbackend.service;
 
+import hu.wcag.wcagbackend.dtos.AiSuggestionDTO;
 import hu.wcag.wcagbackend.model.ScanResult;
 import hu.wcag.wcagbackend.repository.ScanResultRepository;
 import org.springframework.stereotype.Service;
@@ -17,11 +18,6 @@ public class ScanResultService {
     }
 
     @Transactional
-    public ScanResult saveResult(ScanResult scanResult) {
-        return scanResultRepository.save(scanResult);
-    }
-
-    @Transactional
     public List<ScanResult> saveAllResults(List<ScanResult> results) {
         return scanResultRepository.saveAll(results);
     }
@@ -31,8 +27,19 @@ public class ScanResultService {
         return scanResultRepository.findByScanId(scanId);
     }
 
-    @Transactional(readOnly = true)
-    public List<ScanResult> getResultsByScanIdAndErrorId(Long scanId, Long errorId) {
-        return scanResultRepository.findByScanIdAndWcagErrorId(scanId, errorId);
+    @Transactional
+    public ScanResult getById(Long scanResultId){ return scanResultRepository.getById(scanResultId); }
+
+    @Transactional
+    public AiSuggestionDTO readSuggestion(ScanResult scanResult){
+        if (scanResult.getAiSuggestion() != null)
+            return scanResult.getAiSuggestion();
+        return null;
+    }
+
+    @Transactional
+    public void saveSuggestion(Long scanResultId, AiSuggestionDTO suggestion){
+        ScanResult scanResult = scanResultRepository.getById(scanResultId);
+        scanResult.setAiSuggestion(suggestion);
     }
 }

@@ -46,6 +46,10 @@ public class CustomColorContrastService {
                 String tagname = element.getTagName().toLowerCase();
                 boolean isInteractive = tagname.equals("a") || tagname.equals("button") || tagname.equals("input");
 
+                if (element.getText().isBlank()) {
+                    continue;
+                }
+
                 if (isInteractive) {
                     try {
                         actions.moveToElement(element).perform();
@@ -71,7 +75,7 @@ public class CustomColorContrastService {
                     result.setWcagError(contrastError);
                     result.setTargetSelector(generateCssSelector(element));
                     result.setErrorLevel("SERIOUS");
-                    result.setAiSuggestion("");//majd ki lesz töltve
+                    result.setAiSuggestion(null);
 
                     scanResultRepository.save(result);
                 }

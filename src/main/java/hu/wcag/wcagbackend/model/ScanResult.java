@@ -1,6 +1,9 @@
 package hu.wcag.wcagbackend.model;
 
+import hu.wcag.wcagbackend.dtos.AiSuggestionDTO;
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Entity
 @Table(name = "scan_results")
@@ -27,13 +30,17 @@ public class ScanResult {
     @Column(name = "target_selector", nullable = false, columnDefinition = "TEXT")
     private String targetSelector;
 
-    @Column(name = "ai_suggestion", columnDefinition = "TEXT")
-    private String aiSuggestion;
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "ai_suggestion", columnDefinition = "jsonb")
+    private AiSuggestionDTO aiSuggestion;
+
+    @Column(name = "failure_summary", columnDefinition = "TEXT")
+    private String failureSummary;
 
     public ScanResult() {
     }
 
-    public ScanResult(Long id, Scan scan, WcagError wcagError, String errorLevel, String htmlElement, String targetSelector, String aiSuggestion) {
+    public ScanResult(Long id, Scan scan, WcagError wcagError, String errorLevel, String htmlElement, String targetSelector, AiSuggestionDTO aiSuggestion, String failureSummary) {
         this.id = id;
         this.scan = scan;
         this.wcagError = wcagError;
@@ -41,6 +48,7 @@ public class ScanResult {
         this.htmlElement = htmlElement;
         this.targetSelector = targetSelector;
         this.aiSuggestion = aiSuggestion;
+        this.failureSummary = failureSummary;
     }
 
     public Long getId() {
@@ -91,11 +99,17 @@ public class ScanResult {
         this.targetSelector = targetSelector;
     }
 
-    public String getAiSuggestion() {
+    public AiSuggestionDTO getAiSuggestion() {
         return aiSuggestion;
     }
 
-    public void setAiSuggestion(String aiSuggestion) {
+    public void setAiSuggestion(AiSuggestionDTO aiSuggestion) {
         this.aiSuggestion = aiSuggestion;
+    }
+
+    public String getFailureSummary() {return failureSummary;}
+
+    public void setFailureSummary(String failureSummary) {
+        this.failureSummary = failureSummary;
     }
 }

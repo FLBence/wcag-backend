@@ -28,15 +28,4 @@ public class WcagErrorService {
                     return errorRepository.save(wcagError);
                 });
     }
-
-    @Transactional(readOnly = true)
-    public List<WcagError> getAllErrors() {
-        return errorRepository.findAll();
-    }
-
-    @Transactional(readOnly = true)
-    public  WcagError getErrorByRuleId(String ruleId) {
-        return errorRepository.findByRuleId(ruleId)
-                .orElseThrow(() -> new RuntimeException("WCAG hiba nem található ezzel a szabály azonosítóval: " + ruleId));
-    }
 }

@@ -24,7 +24,7 @@ public class UserController {
     public ResponseEntity<List<ScanDTO>> getMyScans(Authentication authentication) {
         User user = (User) authentication.getPrincipal();
 
-        List<ScanDTO> myScans = scanRepository.findByUserId(user.getId())
+        List<ScanDTO> myScans = scanRepository.findByUserIdOrderByCompletedAtDesc(user.getId())
                 .stream()
                 .map(ScanDTO::fromModel)
                 .toList();

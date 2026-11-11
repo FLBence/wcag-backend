@@ -17,5 +17,5 @@ public interface ScanRepository extends JpaRepository<Scan, Long> {
 
     Optional<Scan> findByUserIdAndWebsiteId(Long userId, Long websiteId);
 
-    List<Scan> findByUserId(Long userId);
+    List<Scan> findByUserIdOrderByCompletedAtDesc(Long userId);
 }

@@ -90,6 +90,7 @@ public class AxeScanService {
                         scanResult.setWcagError(wcagError);
                         scanResult.setTargetSelector(targetSelector);
                         scanResult.setHtmlElement(htmlSnippet);
+                        scanResult.setFailureSummary(node.getFailureSummary());
                         if (violation.getImpact() != null) {
                             scanResult.setErrorLevel(violation.getImpact().toUpperCase());
                         } else {

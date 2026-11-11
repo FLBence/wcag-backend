@@ -7,7 +7,7 @@ public record ScanResultDTO(
         String targetSelector,
         String htmlElement,
         String errorLevel,
-        String aiSuggestion,
+        AiSuggestionDTO aiSuggestion,
         String ruleId,
         String errorName,
         String description,

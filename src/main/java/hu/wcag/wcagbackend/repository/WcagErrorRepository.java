@@ -10,6 +10,4 @@ import java.util.Optional;
 public interface WcagErrorRepository extends JpaRepository<WcagError, Long> {
 
     Optional<WcagError> findByRuleId(String ruleId);
-
-    boolean existsByRuleId(String ruleId);
 }

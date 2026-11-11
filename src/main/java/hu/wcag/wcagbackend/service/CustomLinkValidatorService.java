@@ -58,7 +58,7 @@ public class CustomLinkValidatorService {
                 scanResult.setTargetSelector(generateCssSelector(link));
                 scanResult.setErrorLevel("SERIOUS");
                 scanResult.setWcagError(linkError);
-                scanResult.setAiSuggestion("");
+                scanResult.setAiSuggestion(null);
 
                 scanResultRepository.save(scanResult);
             }

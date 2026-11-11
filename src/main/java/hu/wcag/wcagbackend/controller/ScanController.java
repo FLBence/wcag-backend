@@ -1,5 +1,6 @@
 package hu.wcag.wcagbackend.controller;
 
+import hu.wcag.wcagbackend.dtos.AiSuggestionDTO;
 import hu.wcag.wcagbackend.dtos.CreateScanRequestDTO;
 import hu.wcag.wcagbackend.dtos.ScanDTO;
 import hu.wcag.wcagbackend.dtos.ScanResultDTO;
@@ -11,6 +12,7 @@ import hu.wcag.wcagbackend.repository.ScanResultRepository;
 import hu.wcag.wcagbackend.repository.WebsiteRepository;
 import hu.wcag.wcagbackend.service.*;
 import hu.wcag.wcagbackend.types.Status;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -37,8 +39,16 @@ public class ScanController {
     private final WebsiteRepository websiteRepository;
     private final ScanRepository scanRepository;
     private final ScanResultRepository scanResultRepository;
+    private final AiSuggestionService aiSuggestionService;
 
-    public ScanController(AxeScanService axeScanService, ScanService scanService, ScanResultService scanResultService, UserService userService, WebsiteRepository websiteRepository, ScanRepository scanRepository, ScanResultRepository scanResultRepository){
+    public ScanController(AxeScanService axeScanService,
+                          ScanService scanService,
+                          ScanResultService scanResultService,
+                          UserService userService,
+                          WebsiteRepository websiteRepository,
+                          ScanRepository scanRepository,
+                          ScanResultRepository scanResultRepository,
+                          AiSuggestionService aiSuggestionService){
         this.axeScanService = axeScanService;
         this.scanService = scanService;
         this.scanResultService = scanResultService;
@@ -46,6 +56,7 @@ public class ScanController {
         this.websiteRepository = websiteRepository;
         this.scanRepository = scanRepository;
         this.scanResultRepository = scanResultRepository;
+        this.aiSuggestionService = aiSuggestionService;
     }
 
     private boolean isValidUrl(String url){
@@ -112,6 +123,7 @@ public class ScanController {
             scan.setScannedAt(LocalDateTime.now());
             scanResultRepository.deleteByScanId(scan.getId());
             scan = scanRepository.save(scan);
+            scanService.updateScanStatus(scan.getId(), Status.COMPLETED);
         } else
             scan = scanService.initiateScan(website.getId(),user.getId());
 
@@ -137,5 +149,13 @@ public class ScanController {
                 .map(ScanResultDTO::fromModel)
                 .toList();
         return ResponseEntity.ok(scanResult);
+    }
+
+    @GetMapping("/{scanId}/results/{scanResultId}/suggestion")
+    public ResponseEntity<AiSuggestionDTO> getSuggestion(@PathVariable("scanId") Long scanId, @PathVariable("scanResultId") Long scanResultId){
+        AiSuggestionDTO suggestion = aiSuggestionService.getSuggestion(scanId, scanResultId);
+        if (suggestion == null)
+            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).build();
+        return ResponseEntity.ok(suggestion);
     }
 }

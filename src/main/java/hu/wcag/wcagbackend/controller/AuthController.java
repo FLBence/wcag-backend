@@ -46,7 +46,7 @@ public class AuthController {
         user.setRole(Role.USER);
         user.setCreatedAt(LocalDateTime.now());
         userService.saveUser(user);
-        return ResponseEntity.status(HttpStatus.CREATED).body("A felhasználó regisztrációja sikeresen megtörtént!");
+        return ResponseEntity.status(HttpStatus.CREATED).body("Sikeres regisztráció!");
     }
 
     @PostMapping("/login")
@@ -63,6 +63,16 @@ public class AuthController {
             return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/changepass")
+    public ResponseEntity<String> changePassword(@RequestBody LoginDTO loginDTO){
+        try{
+            userService.updatePasswordByEmail(loginDTO);
+            return ResponseEntity.status(HttpStatus.OK).body("A jelszó módosítása sikeresen megtörtént!");
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 }

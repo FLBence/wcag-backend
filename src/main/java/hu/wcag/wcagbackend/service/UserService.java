@@ -29,11 +29,6 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
-    }
-
-    @Transactional(readOnly = true)
     public User getUserById(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("A felhasználó nem található ezzel az ID-val: " + id));
@@ -53,10 +48,10 @@ public class UserService {
         return true;
     }
 
-    @Transactional
-    public void deleteUserById(Long id){
-        if (!userRepository.existsById(id))
-            throw new RuntimeException("Nem törölhető, a felhasználó nem található ezzel az ID-val: " + id);
-        userRepository.deleteById(id);
+    public void updatePasswordByEmail(LoginDTO loginDTO){
+        User user = userRepository.findByEmail(loginDTO.email())
+                .orElseThrow(() -> new RuntimeException("A felhasználó nem található ezzel az email címmel: " + loginDTO.email()));
+        user.setPassword(passwordEncoder.encode(loginDTO.password()));
+        userRepository.save(user);
     }
 }
