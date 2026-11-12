@@ -22,7 +22,7 @@ public class User implements UserDetails {
     @Column(name = "username", length = 50, nullable = false)
     private String username;
 
-    @Column(name = "email", length = 30, nullable = false, unique = true)
+    @Column(name = "email", length = 40, nullable = false, unique = true)
     private String email;
 
     @Column(name = "password", length = 255, nullable = false)

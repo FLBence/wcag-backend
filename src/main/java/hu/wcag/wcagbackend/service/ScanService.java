@@ -28,7 +28,7 @@ public class ScanService {
     @Transactional
         public Scan initiateScan(Long websiteId, Long userId) {
         Website website = websiteRepository.findById(websiteId)
-                .orElseThrow(() -> new RuntimeException("A weboldal nem találahtó ezzel az ID-val:  " + websiteId));
+                .orElseThrow(() -> new RuntimeException("A weboldal nem található ezzel az ID-val:  " + websiteId));
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("A felhasználó nem található ezzel az ID-val: " + userId));

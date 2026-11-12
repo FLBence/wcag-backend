@@ -1,12 +1,15 @@
 package hu.wcag.wcagbackend.service;
 
 import hu.wcag.wcagbackend.dtos.LoginDTO;
+import hu.wcag.wcagbackend.dtos.RegisterDTO;
 import hu.wcag.wcagbackend.model.User;
 import hu.wcag.wcagbackend.repository.UserRepository;
+import hu.wcag.wcagbackend.types.Role;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -18,14 +21,6 @@ public class UserService {
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
-    }
-
-    @Transactional
-    public User saveUser(User user){
-        if (userRepository.existsByEmail(user.getEmail())) {
-            throw new IllegalArgumentException("Ez az email cím már regisztrálva van: " + user.getEmail());
-        }
-        return userRepository.save(user);
     }
 
     @Transactional(readOnly = true)
@@ -40,12 +35,30 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("A felhasználó nem található ezzel az email címmel: " + email));
     }
 
-    public boolean login(LoginDTO loginDTO){
+    @Transactional
+    public void registerUser(RegisterDTO registerDTO){
+        if (userRepository.existsByEmail(registerDTO.email())){
+            throw new IllegalArgumentException("Ez az email cím már regisztrálva van: " + registerDTO.email());
+        }
+        User user = new User();
+        user.setUsername(registerDTO.username());
+        user.setEmail(registerDTO.email());
+        user.setPassword(passwordEncoder.encode(registerDTO.password()));
+        user.setRole(Role.USER);
+        user.setCreatedAt(LocalDateTime.now());
+        try {
+            userRepository.save(user);
+        }catch (Exception e){
+            throw new IllegalArgumentException("Ez az email cím már regisztrálva van: " + registerDTO.email());
+        }
+    }
+
+    @Transactional
+    public void login(LoginDTO loginDTO){
         User user = getUserByEmail(loginDTO.email());
-        if(!passwordEncoder.matches(loginDTO.password(), user.getPassword())){
+        if(!passwordEncoder.matches(loginDTO.password(), user.getPassword())) {
             throw new RuntimeException("Hibás jelszó!");
         }
-        return true;
     }
 
     public void updatePasswordByEmail(LoginDTO loginDTO){
