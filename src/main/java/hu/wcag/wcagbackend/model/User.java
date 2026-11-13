@@ -2,6 +2,7 @@ package hu.wcag.wcagbackend.model;
 
 import hu.wcag.wcagbackend.types.Role;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import org.jspecify.annotations.NonNull;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -11,6 +12,10 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
+/*
+ * A felhasználók adatainak tárolását leíró modell,
+ * valamint az adatokhoz tartozó alapvető adatbázis szintű korlátozás, továbbá validációs feltételek meghatározása.
+ */
 @Entity
 @Table(name = "users")
 public class User implements UserDetails {
@@ -22,6 +27,7 @@ public class User implements UserDetails {
     @Column(name = "username", length = 50, nullable = false)
     private String username;
 
+    @Email
     @Column(name = "email", length = 40, nullable = false, unique = true)
     private String email;
 
@@ -38,15 +44,11 @@ public class User implements UserDetails {
     public User() {
     }
 
-    public User(Long id, String username, String email, String password, Role role, LocalDateTime createdAt) {
-        this.id = id;
-        this.username = username;
-        this.email = email;
-        this.password = password;
-        this.role = role;
-        this.createdAt = createdAt;
-    }
-
+    /*
+    * A felhasználó szerepköréhez tartozó jogosultságok átadása a Spring Security számára.
+    *
+    * Felhasznált forrás: https://stackoverflow.com/questions/76632398/spring-boot-security-use-roles
+    */
     @Override
     public @NonNull Collection<? extends GrantedAuthority> getAuthorities(){
         return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));

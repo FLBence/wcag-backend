@@ -1,7 +1,9 @@
 package hu.wcag.wcagbackend.types;
 
+/*
+ * A rendszerben használható felhasználói szerepkörök meghatározása.
+ */
 public enum Role{
-    ADMIN,
     USER,
     READER
 }

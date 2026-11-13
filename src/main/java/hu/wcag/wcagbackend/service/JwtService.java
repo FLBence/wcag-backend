@@ -12,6 +12,17 @@ import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
+/*
+* JWT alapú ellenőrzéshez használt token kezelése.
+*
+* Felelős a JWT token létrehozásáért, token érvényesség ellenőrzéséért, valamint a tokenből származó felhasználói adatok kiolvasásáért.
+*
+* Felhasznált források:
+*   https://stackoverflow.com/questions/76632398/spring-boot-security-use-roles
+*   https://medium.com/@victoronu/implementing-jwt-authentication-in-a-simple-spring-boot-application-with-java-b3135dbdb17b
+*
+* A kód a felhasznált források és a mesterséges intelligencia segítségével készültek.
+*/
 @Service
 public class JwtService {
     @Value("${jwt.secret}")
@@ -20,11 +31,18 @@ public class JwtService {
     private long jwtExpirationMs;
     private SecretKey key;
 
+    /*
+    * JWT-hez szükséges kulcs inicializálása az alkalmazás konfigurációjában megadott érték alapján.
+    */
     @PostConstruct
     protected void init(){
         this.key = Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
     }
 
+    /*
+    * Új JWT token létrehozása a mgeadott email címhez.
+    * Token lejárati idejének beállítása, valamint digitális aláírása a korábban inicializált kulccsal.
+    */
     public String generateToken(String email) {
         return Jwts.builder()
                 .subject(email)
@@ -34,6 +52,10 @@ public class JwtService {
                 .compact();
     }
 
+    /*
+    * Email cím koilvasása a JWT tokenból a token validálása után.
+    *
+    */
     public String getEmailFromToken(String token){
         return Jwts.parser()
                 .verifyWith(key).build()
@@ -42,6 +64,11 @@ public class JwtService {
                 .getSubject();
     }
 
+    /*
+    * JWT token érvényességének ellenőrzése.
+    *
+    * Ellenőrzi a token aláírását, szerkezetét, valamint lejárati idejét, csak érvényes token esetén ad true értéket vissza.
+    * */
     public boolean validateJwtToken(String token) {
         try{
             Jwts.parser().verifyWith(key).build().parseSignedClaims(token);

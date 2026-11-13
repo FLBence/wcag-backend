@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/*
+* Felhasználóhoz kapcsolódó API végpont kezelése
+*/
 @CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/users")
@@ -20,6 +23,9 @@ public class UserController {
         this.scanRepository = scanRepository;
     }
 
+    /*
+    * Az autentikált felhasználó szkennjeinek lekérése.
+    */
     @GetMapping("/myscans")
     public ResponseEntity<List<ScanDTO>> getMyScans(Authentication authentication) {
         User user = (User) authentication.getPrincipal();

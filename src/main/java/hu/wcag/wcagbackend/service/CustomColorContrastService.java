@@ -17,6 +17,15 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/*
+* A megadott weboldal szöveges elemeinek egyedi színkontraszt vizsgálata.
+*
+* A Selenium WebDriver segítségével lekéri az oldalon található szöveges elemek szöveg továbbá háttérszínét,
+* és a ContrastCalculator segédosztály segítségével kiszámítja a kontrasztarányt,
+* amennyiben az arány nem éri el a WCAG szabvány által megszabott minimumot azonosítja az elemeket és WCAG hibaként rögzíti.
+*
+* A kódrészlet mesterséges intelligencia segítségével készült.
+*/
 @Service
 public class CustomColorContrastService {
 
@@ -34,11 +43,17 @@ public class CustomColorContrastService {
         this.wcagErrorService = wcagErrorService;
     }
 
+    /*
+    * Kontrasztvalidálást elvégzéséért felelős függvény.
+    *
+    * Kigyűjti a szöveget tartalmazó elemeket és végigellenőrzi, hogy megfelel-e a WCAG által meghatározott kontrasztértékeknek,
+    * amennyiben nem új hibaként elmenti.
+    * */
     public void validateColorContrast(Long scanId, WebDriver driver){
         Scan scan = scanRepository.findById(scanId)
                 .orElseThrow(() -> new RuntimeException("Nem található scan ezzel az ID-vel: " + scanId));
 
-        List<WebElement> elements = driver.findElements(By.cssSelector("a, button, p, span, h1, h2, h3, h4, h5, h6, label, li"));
+        List<WebElement> elements = driver.findElements(By.cssSelector("a, button, p, span, h1, h2, h3, h4, h5, h6, label, li, input"));
         Actions actions = new Actions(driver);
 
         for (WebElement element : elements){
@@ -62,7 +77,11 @@ public class CustomColorContrastService {
 
                 double contrastRatio = ContrastCalculator.calculateContrastRatio(ColorUtil.parseColor(textColor), ColorUtil.parseColor(bgColor));
 
-                if (contrastRatio < 4.5) {
+                double req = isLargeText(element) ? 3.0 : 4.5;
+                if (contrastRatio < req) {
+                    /*
+                    * A hiba adatai mesterséges intelligencia által lettek létrehozva.
+                    */
                     WcagError contrastError = wcagErrorService.getOrCreateError(
                             "CUSTOM-COLOR-CONTRAST",
                             "Insufficient color contrast",
@@ -85,6 +104,13 @@ public class CustomColorContrastService {
         }
     }
 
+    /*
+    * CSS szelekor előállítása a megadott HTML elemhez.
+    *
+    * Elsődlegesen az elem ID-ja alapján, ennek hiányában az osztályneveket, végül pedig az adott elem típusát adja vissza.
+    *
+    * Felhasznált forrás: https://stackoverflow.com/questions/30716637/quickly-get-class-attribute-of-every-webelement-with-selenium-in-java
+    */
     private String generateCssSelector(WebElement element){
         String id = element.getAttribute("id");
         if (id != null && !id.isEmpty())
@@ -94,6 +120,24 @@ public class CustomColorContrastService {
             return element.getTagName() + "." + className.trim().replaceAll("\\s+", ".");
         }
         return element.getTagName();
+    }
+
+    /*
+    * Szöveg méret ellenőrző
+    *
+    * A WCAG szabvány eltérő kontrasztarányokat határozott meg a normál és a nagy méretű szövegek esetében.
+    * Megvizsgálja az adott elem szövegének méretét és betűvastagságát (dőlt), ezek alapján eldönti hogy a WCAG szabvány alapján normál vagy nagy méretű-e a szöveg.
+    */
+    private boolean isLargeText(WebElement element) {
+        try {
+            String fontSizePx = element.getCssValue("font-size");
+            int boldNum = Integer.parseInt(element.getCssValue("font-weight"));
+            boolean bold = boldNum >= 700;
+            double fontSize = Double.parseDouble(fontSizePx.replace("px", "").trim());
+            return fontSize >= 24 || (bold && fontSize >= 18.66);
+        }catch (Exception e){
+            return false;
+        }
     }
 
 }

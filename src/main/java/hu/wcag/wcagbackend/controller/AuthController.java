@@ -3,21 +3,22 @@ package hu.wcag.wcagbackend.controller;
 import hu.wcag.wcagbackend.dtos.LoginDTO;
 import hu.wcag.wcagbackend.dtos.RegisterDTO;
 import hu.wcag.wcagbackend.model.User;
-import hu.wcag.wcagbackend.repository.UserRepository;
 import hu.wcag.wcagbackend.service.JwtService;
 import hu.wcag.wcagbackend.service.UserService;
-import hu.wcag.wcagbackend.types.Role;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
+/*
+* Felhasználói hitelesítéshez kapcsolódó API végpontok beállítása és kezelése.
+*
+* Regisztráció, bejelentkezés és jelszómódosítás végponjainak kezelése.
+*/
 @CrossOrigin(origins = "*")
 @Controller
 @RequestMapping("/auth")

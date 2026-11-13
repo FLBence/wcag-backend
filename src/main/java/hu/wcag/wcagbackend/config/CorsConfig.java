@@ -8,6 +8,12 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 
+/*
+* CORS konfiguráció beállítása
+* Felhasznált forrás: https://docs.spring.io/spring-security/reference/servlet/integrations/cors.html
+*
+* Mesterséges intelligenciával kibővített kódrészlet, a módosítások a felhasznált források kódjainak feladatspecifikus átalakításaval történtek.
+*/
 @Configuration
 public class CorsConfig {
     @Bean

@@ -5,6 +5,10 @@ import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 
+/*
+* A weboldalakon végzett WCAG vizsgálatok adatainak tárolását leíró modell,
+* valamint az adatokhoz tartozó alapvető adatbázis szintű korlátozás.
+*/
 @Entity
 @Table(name = "scans")
 public class Scan {
@@ -32,15 +36,6 @@ public class Scan {
     private User user;
 
     public Scan() {
-    }
-
-    public Scan(Long id, Website website, LocalDateTime scannedAt, LocalDateTime completedAt, Status status, User user) {
-        this.id = id;
-        this.website = website;
-        this.scannedAt = scannedAt;
-        this.completedAt = completedAt;
-        this.status = status != null ? status : Status.PENDING;
-        this.user = user;
     }
 
     @PrePersist

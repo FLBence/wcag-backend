@@ -5,8 +5,12 @@ import hu.wcag.wcagbackend.repository.WcagErrorRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
+/*
+ * A WCAG szabályokhoz tartozó hibák adatainak kezelése.
+ *
+ * Felelős a hibák lekérdezéséért, valamint az adatbázisban
+ * még nem szereplő WCAG hibák létrehozásáért és mentéséért.
+ */
 @Service
 public class WcagErrorService {
 
@@ -16,6 +20,12 @@ public class WcagErrorService {
         this.errorRepository = errorRepository;
     }
 
+    /*
+     * WCAG hiba lekérése azonosító alapján.
+     *
+     * Ha az adott szabályhoz még nem tartozik bejegyzés,
+     * létrehozza és elmenti az új hibát a megadott adatokkal.
+     */
     @Transactional
     public WcagError getOrCreateError(String ruleId, String name, String description, String wcagCriterion) {
         return errorRepository.findByRuleId(ruleId)

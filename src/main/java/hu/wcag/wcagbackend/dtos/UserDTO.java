@@ -4,12 +4,18 @@ import hu.wcag.wcagbackend.model.User;
 
 import java.time.LocalDateTime;
 
+/*
+ * Felhasználó adatainak továbbítása a kliens felé.
+ */
 public record UserDTO(
         Long id,
         String username,
         String email,
         LocalDateTime createdAt
 ) {
+    /*
+     * User entitás átalakítása UserDTO objektummá.
+     */
     public static UserDTO fromModel(User user) {
         return new UserDTO(
                 user.getId(),

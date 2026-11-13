@@ -10,8 +10,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
+/*
+ * A felhasználókhoz kapcsolódó műveletek kezelése.
+ *
+ * Felelős a felhasználók lekérdezéséért, regisztrációjáért,
+ * bejelentkezésének ellenőrzéséért és jelszavuk módosításáért.
+ */
 @Service
 public class UserService {
 
@@ -23,18 +28,30 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    /*
+     * Felhasználó lekérése azonosító alapján.
+     */
     @Transactional(readOnly = true)
     public User getUserById(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("A felhasználó nem található ezzel az ID-val: " + id));
     }
 
+    /*
+     * Felhasználó lekérése e-mail-cím alapján.
+     */
     @Transactional(readOnly = true)
     public User getUserByEmail(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("A felhasználó nem található ezzel az email címmel: " + email));
     }
 
+    /*
+     * Új felhasználó regisztrálása.
+     *
+     * Ellenőrzi, hogy az e-mail-cím szerepel-e már az adatbázisban,
+     * majd titkosítja a jelszót, beállítja a felhasználó alapadatait és elmenti az új felhasználót.
+     */
     @Transactional
     public void registerUser(RegisterDTO registerDTO){
         if (userRepository.existsByEmail(registerDTO.email())){
@@ -53,7 +70,13 @@ public class UserService {
         }
     }
 
-    @Transactional
+    /*
+     * A felhasználó bejelentkezési adatainak ellenőrzése.
+     *
+     * Megkeresi a felhasználót az e-mail-címe alapján, majd összehasonlítja a megadott jelszót
+     * az adatbázisban tárolt titkosított jelszóval.
+     */
+    @Transactional(readOnly = true)
     public void login(LoginDTO loginDTO){
         User user = getUserByEmail(loginDTO.email());
         if(!passwordEncoder.matches(loginDTO.password(), user.getPassword())) {
@@ -61,6 +84,12 @@ public class UserService {
         }
     }
 
+    /*
+     * A felhasználó jelszavának módosítása e-mail-cím alapján.
+     *
+     * Az új jelszót titkosítva menti az adatbázisba.
+     */
+    @Transactional
     public void updatePasswordByEmail(LoginDTO loginDTO){
         User user = userRepository.findByEmail(loginDTO.email())
                 .orElseThrow(() -> new RuntimeException("A felhasználó nem található ezzel az email címmel: " + loginDTO.email()));

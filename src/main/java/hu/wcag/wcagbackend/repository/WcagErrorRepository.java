@@ -6,6 +6,9 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
+/*
+ * A WCAG-vizsgálatok során talált hibák adatbázis műveleteinek és lekérdezéseinek kezelése.
+ */
 @Repository
 public interface WcagErrorRepository extends JpaRepository<WcagError, Long> {
 

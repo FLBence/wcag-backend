@@ -5,6 +5,10 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+/*
+ * A weboldalakon végzett WCAG vizsgálat eredményeinek tárolását leíró modell,
+ * valamint az adatokhoz tartozó alapvető adatbázis szintű korlátozás.
+ */
 @Entity
 @Table(name = "scan_results")
 public class ScanResult {
@@ -38,17 +42,6 @@ public class ScanResult {
     private String failureSummary;
 
     public ScanResult() {
-    }
-
-    public ScanResult(Long id, Scan scan, WcagError wcagError, String errorLevel, String htmlElement, String targetSelector, AiSuggestionDTO aiSuggestion, String failureSummary) {
-        this.id = id;
-        this.scan = scan;
-        this.wcagError = wcagError;
-        this.errorLevel = errorLevel;
-        this.htmlElement = htmlElement;
-        this.targetSelector = targetSelector;
-        this.aiSuggestion = aiSuggestion;
-        this.failureSummary = failureSummary;
     }
 
     public Long getId() {

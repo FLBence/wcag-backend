@@ -6,6 +6,9 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
+/*
+ * A felhasználók adatbázis műveleteinek és lekérdezéseinek kezelése.
+ */
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 

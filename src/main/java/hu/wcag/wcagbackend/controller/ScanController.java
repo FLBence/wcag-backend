@@ -27,6 +27,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+/*
+* WCAG szkenneléssel kapcsolatos API végpontok beállítása és kezelése, valamint a szkennelendő URL validálása és abból oldal cím kinyerése.
+*
+* Szkenn létrehozása, elindítása, jelenlegi státuszának lekérése, eredmények, valamint az AI alapú javaslatok kezelése.
+*/
 @CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/scans")
@@ -59,6 +64,13 @@ public class ScanController {
         this.aiSuggestionService = aiSuggestionService;
     }
 
+    /*
+    * Szkennelésre megadott URL validálása
+    *
+    * Felhasznált forrás: https://download.java.net/java/early_access/loom/docs/api/java.net.http/java/net/http/HttpClient.html
+    *
+    * Mesterséges intelligenciával módosított kód, a felhasznált forrás kódjának kiegészítése
+    */
     private boolean isValidUrl(String url){
         try {
             URI uri = new URI(url);
@@ -88,6 +100,11 @@ public class ScanController {
         }
     }
 
+    /*
+    * A megadott URL domainnevének kinyerése az URL címből.
+    *
+    * Felhasznált forrás: https://www.baeldung.com/java-domain-name-from-url
+    * */
     private String getTitleFromUrl(String url){
         try{
             URI uri = new URI(url);
@@ -98,6 +115,9 @@ public class ScanController {
         }
     }
 
+    /*
+    * Weboldalvizsgálat létrehozásának vagy egy már létező vizsgálat újbóli előkészítése a megadott weboldalhoz.
+    */
     @Transactional
     @PostMapping
     public ResponseEntity<?> createScan(@RequestBody CreateScanRequestDTO scanRequestDTO) {
@@ -130,18 +150,27 @@ public class ScanController {
         return ResponseEntity.ok(ScanDTO.fromModel(scan));
     }
 
+    /*
+    * A megadott WCAG vizsgálat elindítása.
+    */
     @PostMapping("/{scanId}/start")
     public ResponseEntity<String> startScan(@PathVariable Long scanId) {
         axeScanService.runScan(scanId);
         return ResponseEntity.ok("A szkennelés sikeresen elindult.");
     }
 
+    /*
+     * A megadott WCAG vizsgálat aktuális státuszának lekérése.
+     */
     @GetMapping("/{scanId}")
     public ResponseEntity<ScanDTO> getScanStatus(@PathVariable Long scanId){
         Scan scan = scanService.getScanById(scanId);
         return ResponseEntity.ok(ScanDTO.fromModel(scan));
     }
 
+    /*
+     * A megadott WCAG vizsgálat eredményeinek kezelése.
+     */
     @GetMapping("/{scanId}/results")
     public ResponseEntity<List<ScanResultDTO>> getScanResult(@PathVariable Long scanId){
         List<ScanResultDTO> scanResult = scanResultService.getResultsByScanId(scanId)
@@ -151,6 +180,9 @@ public class ScanController {
         return ResponseEntity.ok(scanResult);
     }
 
+    /*
+     * A megadott WCAG vizsgálati eredményhez tartozó AI alapú javítási javaslat lekérése.
+     */
     @GetMapping("/{scanId}/results/{scanResultId}/suggestion")
     public ResponseEntity<AiSuggestionDTO> getSuggestion(@PathVariable("scanId") Long scanId, @PathVariable("scanResultId") Long scanResultId){
         AiSuggestionDTO suggestion = aiSuggestionService.getSuggestion(scanId, scanResultId);

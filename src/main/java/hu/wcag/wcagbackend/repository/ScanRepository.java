@@ -9,6 +9,9 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
+/*
+ * A WCAG-vizsgálatok adatbázis műveleteinek és lekérdezéseinek kezelése.
+ */
 @Repository
 public interface ScanRepository extends JpaRepository<Scan, Long> {
 

@@ -2,6 +2,10 @@ package hu.wcag.wcagbackend.model;
 
 import jakarta.persistence.*;
 
+/*
+ * A weboldalak WCAG vizsgálata közben talált hibák adatainak tárolását leíró modell,
+ * valamint az adatokhoz tartozó alapvető adatbázis szintű korlátozás.
+ */
 @Entity
 @Table(name = "errors")
 public class WcagError {
@@ -23,14 +27,6 @@ public class WcagError {
     private String wcagCriterion;
 
     public WcagError() {
-    }
-
-    public WcagError(Long id, String ruleId, String name, String description, String wcagCriterion) {
-        this.id = id;
-        this.ruleId = ruleId;
-        this.name = name;
-        this.description = description;
-        this.wcagCriterion = wcagCriterion;
     }
 
     public Long getId() {

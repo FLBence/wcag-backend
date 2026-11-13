@@ -20,6 +20,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/*
+* A weboldalak automatizált WCAG, valamint egyedi vizsgálatainak végrehajtása és az eredmények feldolgozása.
+*
+* Felhasznált források:
+*   https://www.linkedin.com/pulse/automated-tests-accessibility-axe-core-selenium-java-yesica-acha
+*   https://medium.com/@sapna.pathan/axe-tool-for-accessibility-testing-with-selenium-webdriver-using-java-e7a74a379ca7
+*   https://www.justanswer.com/computer-programming/mg0tu-trying-implement-accessibility-using-axe-core.html
+*/
 @Service
 public class AxeScanService {
 
@@ -43,6 +51,15 @@ public class AxeScanService {
         this.customColorContrastService = customColorContrastService;
     }
 
+    /*
+    * A bejelentkezett felhasználó által megadott weboldal aszinkron ellenőrzését végzi.
+    *
+    * Selenium WebDriver és az axe-core segítségével a felhasználók által nem látott úgynevezett headless böngészőben végrehajtja az akadálymentességi ellenőrzéseket.
+    * Az axe-core által talált hibákat elmenti utána pedig lefuttatja az egyedi ellenőrzéseket (Színkontraszt mérés, túl általános link szövegek kiszűrése).
+    * A vizsgálati folyamat végén frissíti a szkennelés állapotát.
+    *
+    * Mesterséges intelligenciával módosított kódrészlet, a módosítások a felhasznált források és a projekt követeményei alapján történtek.
+    */
     @Async
     public void runScan(Long scanId){
         Scan scan = scanService.getScanById(scanId);

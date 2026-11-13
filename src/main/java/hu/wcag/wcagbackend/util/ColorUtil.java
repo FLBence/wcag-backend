@@ -1,10 +1,20 @@
 package hu.wcag.wcagbackend.util;
 
 import java.awt.Color;
-import java.util.Locale;
 
+/*
+ * Színértékek feldolgozásához és Java Color objektummá alakításához szükséges segédosztály.
+ *
+ * Mesterséges intelligenciával módosított kódrészlet.
+ */
 public class ColorUtil {
 
+    /*
+     * A megadott szöveges színérték átalakítása Color objektummá.
+     *
+     * RGB, hexadecimális és néhány névvel megadott színformátumot kezel.
+     * Érvénytelen vagy nem támogatott érték esetén fehér színt ad vissza.
+     */
     public static Color parseColor(String colorStr) {
         if (colorStr == null || colorStr.trim().isEmpty() || colorStr.equals("transparent"))
             return Color.WHITE;

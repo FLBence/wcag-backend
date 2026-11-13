@@ -3,6 +3,10 @@ package hu.wcag.wcagbackend.model;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
+/*
+ * A vizsgált weboldalak adatainak tárolását leíró modell,
+ * valamint az adatokhoz tartozó alapvető adatbázis szintű korlátozás.
+ */
 @Entity
 @Table(name = "websites")
 public class Website {
@@ -21,13 +25,6 @@ public class Website {
     private LocalDateTime createdAt;
 
     public Website() {
-    }
-
-    public Website(Long id, String title, String url, LocalDateTime createdAt) {
-        this.id = id;
-        this.title = title;
-        this.url = url;
-        this.createdAt = createdAt;
     }
 
     @PrePersist

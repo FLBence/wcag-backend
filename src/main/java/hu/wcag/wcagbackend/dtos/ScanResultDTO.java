@@ -2,6 +2,9 @@ package hu.wcag.wcagbackend.dtos;
 
 import hu.wcag.wcagbackend.model.ScanResult;
 
+/*
+ * WCAG vizsgálat eredményeinek továbbítása a kliens felé.
+ */
 public record ScanResultDTO(
         Long id,
         String targetSelector,
@@ -13,6 +16,9 @@ public record ScanResultDTO(
         String description,
         String wcagTags
 ) {
+    /*
+     * ScanResult entitás átalakítása ScanResultDTO objektummá.
+     */
     public static ScanResultDTO fromModel (ScanResult scanResult){
         var error = scanResult.getWcagError();
         return new ScanResultDTO(

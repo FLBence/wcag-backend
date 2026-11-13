@@ -19,7 +19,16 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfigurationSource;
-
+/*
+* Spring Security konfiguráció
+*
+* Hozzáférés szabályozás és a JWT alapú jogosultságkezelés, hitelesítés beállítása.
+* Felhasznált források:
+*   https://docs.spring.io/spring-security/reference/servlet/architecture.html
+*   https://medium.com/@victoronu/implementing-jwt-authentication-in-a-simple-spring-boot-application-with-java-b3135dbdb17b
+*   https://docs.spring.io/spring-security/reference/servlet/authentication/passwords/index.html
+*   https://stackoverflow.com/questions/76632398/spring-boot-security-use-roles
+*/
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -35,6 +44,11 @@ public class SecurityConfig {
         this.corsConfig = corsConfig;
     }
 
+    /*
+    * Engedélyezett végpontok beállítása, JWT hitelesítési szűrő és munkamenet kezelés.
+    *
+    * Mesterséges intelligenciával módosított kódrészlet, a módosítások a felhasznált források kódjainak feladatspecifikus átalakításaval történtek.
+    */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception{
         httpSecurity.csrf(AbstractHttpConfigurer::disable)
@@ -53,6 +67,13 @@ public class SecurityConfig {
         return httpSecurity.build();
     }
 
+    /*
+    * Autentikációs szolgáltató létrehozása
+    *
+    * Felhasználó hitelesítését a CustomUserDetailService, valamint a BCrypt végzi.
+    *
+     * Mesterséges intelligenciával módosított kódrészlet, a módosítások a felhasznált források kódjainak feladatspecifikus átalakításaval történtek.
+    */
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(userDetailService);
@@ -60,11 +81,17 @@ public class SecurityConfig {
         return authProvider;
     }
 
+    /*
+    * AuthenticationManager példány lekérése
+    */
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
 
+    /*
+    * BCrypt alapú jelszótitkosító létrehozása a jelszavak biztonságos tárolása érdekében
+    */
     @Bean
     public PasswordEncoder encoder(){
         return new BCryptPasswordEncoder();

@@ -12,6 +12,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
+/*
+ * A weboldalak WCAG vizsgálataihoz kapcsolódó műveletek kezelése.
+ *
+ * Felelős az új vizsgálatok létrehozásáért, a vizsgálatok állapotának módosításáért,
+ * valamint a vizsgálati adatok lekérdezéséért.
+ */
 @Service
 public class ScanService {
 
@@ -25,6 +31,11 @@ public class ScanService {
         this.userRepository = userRepository;
     }
 
+    /*
+     * Új WCAG vizsgálat létrehozása a megadott weboldalhoz és felhasználóhoz.
+     *
+     * Beállítja a vizsgálat kezdeti időpontját és PENDING állapotát, majd elmenti az adatbázisba.
+     */
     @Transactional
         public Scan initiateScan(Long websiteId, Long userId) {
         Website website = websiteRepository.findById(websiteId)
@@ -42,6 +53,11 @@ public class ScanService {
         return scanRepository.save(scan);
     }
 
+    /*
+     * A megadott WCAG-vizsgálat állapotának módosítása.
+     *
+     * Befejezett vagy megszakított vizsgálat esetén rögzíti az időpontot.
+     */
     @Transactional
     public void updateScanStatus(Long scanId, Status status) {
         Scan scan = getScanById(scanId);
@@ -54,6 +70,11 @@ public class ScanService {
         scanRepository.save(scan);
     }
 
+    /*
+     * WCAG-vizsgálat lekérése azonosító alapján.
+     *
+     * A kapcsolódó weboldal adatait is betölti.
+     */
     @Transactional(readOnly = true)
     public Scan getScanById(Long id) {
         return scanRepository.findByIdWithWebsite(id)
