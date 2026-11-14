@@ -7,6 +7,9 @@ WORKDIR /app
 COPY .mvn/ .mvn
 COPY mvnw pom.xml ./
 
+# FONTOS: Biztosítjuk, hogy az mvnw futtatható legyen
+RUN chmod +x mvnw
+
 # Futtassuk le a függőségek letöltését (ez gyorsítja a későbbi buildeket, ha nem változott a pom.xml)
 RUN ./mvnw dependency:go-offline
 
