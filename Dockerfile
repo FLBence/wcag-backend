@@ -31,4 +31,4 @@ ENV PORT=8080
 EXPOSE 8080
 
 # Az alkalmazás indítása
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-Xmx350m", "-jar", "app.jar"]
