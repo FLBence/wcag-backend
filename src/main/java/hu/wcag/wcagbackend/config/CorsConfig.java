@@ -20,12 +20,9 @@ public class CorsConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        String frontendUrl = System.getenv("FRONTEND_URL");
         List<String> allowedOrigins = new java.util.ArrayList<>();
         allowedOrigins.add("http://localhost:4200");
-        if (frontendUrl != null && !frontendUrl.isBlank()) {
-            allowedOrigins.add(frontendUrl);
-        }
+        allowedOrigins.add("https://wcag-accessibility-auditor.netlify.app");
         configuration.setAllowedOrigins(allowedOrigins);
 
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
